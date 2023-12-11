@@ -10,6 +10,16 @@ on:
         type: string
         description: "The provider to choose for either machine or k8s tests ('lxd' or 'microk8s')"
         required: true
+      ip-range-start:
+        type: string
+        description: "The first IP address in the address pool for the load balancer to use"
+        required: false
+        default: "{{ env.IPADDR }}"
+      ip-range-end:
+        type: string
+        description: "The last IP address in the address pool for the load balancer to use"
+        required: false
+        default: "{{ env.IPADDR }}"
     secrets:
       CHARMHUB_TOKEN:
         required: false
@@ -50,22 +60,22 @@ jobs:
           charm-path: "${{ inputs.charm-path }}"
   static-analysis:
     name: Static Analysis
-    uses: canonical/observability/.github/workflows/_charm-static-analysis.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-static-analysis.yaml@main
     with:
       charm-path: "${{ inputs.charm-path }}"
   linting:
     name: Linting
-    uses: canonical/observability/.github/workflows/_charm-linting.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-linting.yaml@main
     with:
       charm-path: "${{ inputs.charm-path }}"
   unit-test:
     name: Unit Tests
-    uses: canonical/observability/.github/workflows/_charm-tests-unit.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-tests-unit.yaml@main
     with:
       charm-path: "${{ inputs.charm-path }}"
   scenario-test:
     name: Scenario Tests
-    uses: canonical/observability/.github/workflows/_charm-tests-scenario.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-tests-scenario.yaml@main
     with:
       charm-path: "${{ inputs.charm-path }}"
   integration-test:
@@ -75,16 +85,18 @@ jobs:
       - linting
       - unit-test
       - scenario-test
-    uses: canonical/observability/.github/workflows/_charm-tests-integration.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-tests-integration.yaml@main
     with:
       charm-path: "${{ inputs.charm-path }}"
       provider: "${{ inputs.provider }}"
+      ip-range-start: ${{ inputs.ip-range-start }}
+      ip-range-end: ${{ inputs.ip-range-end }}
   codeql:
     name: CodeQL analysis
     needs:
       - static-analysis
       - linting
       - unit-test
-    uses: canonical/observability/.github/workflows/_charm-codeql-analysis.yml@main
+    uses: bencekov/observability/.github/workflows/_charm-codeql-analysis.yml@main
     with:
       charm-path: "${{ inputs.charm-path }}"

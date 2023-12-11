@@ -13,6 +13,16 @@ on:
         default: 'microk8s'
         required: false
         type: string
+      ip-range-start:
+        type: string
+        description: "The first IP address in the address pool for the load balancer to use"
+        required: false
+        default: "{{ env.IPADDR }}"
+      ip-range-end:
+        type: string
+        description: "The last IP address in the address pool for the load balancer to use"
+        required: false
+        default: "{{ env.IPADDR }}"
     secrets:
        CHARMHUB_TOKEN:
          required: false
@@ -55,8 +65,10 @@ jobs:
     needs:
       - ci-ignore
     if: needs.ci-ignore.outputs.any_modified == 'true'
-    uses: canonical/observability/.github/workflows/_charm-quality-checks.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-quality-checks.yaml@main
     secrets: inherit
     with:
       charm-path: ${{ inputs.charm-path }}
       provider: ${{ inputs.provider }}
+      ip-range-start: ${{ inputs.ip-range-start }}
+      ip-range-end: ${{ inputs.ip-range-end }}
