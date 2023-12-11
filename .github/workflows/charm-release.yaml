@@ -41,7 +41,7 @@ concurrency:
 jobs:
   quality-checks:
     name: Quality Checks
-    uses: canonical/observability/.github/workflows/_charm-quality-checks.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-quality-checks.yaml@main
     secrets: inherit
     with:
       charm-path: "${{ inputs.charm-path }}"
@@ -52,7 +52,7 @@ jobs:
     name: Release Charm and Libraries
     needs:
       - quality-checks
-    uses: canonical/observability/.github/workflows/_charm-release.yaml@main
+    uses: bencekov/observability/.github/workflows/_charm-release.yaml@main
     secrets: inherit
     with:
       artifact: "${{ inputs.artifact }}"
